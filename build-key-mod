@@ -1,0 +1,57 @@
+#!/bin/sh
+
+#
+# Make a certificate/private key pair using a locally generated
+# root certificate.
+#
+
+# Modded by SuicideFunky
+
+templates_dir=../templates
+tunnelblick_root=tunnelblick
+tunnelblick_dir=Contents/Resources
+openvpn_root=openvpn
+
+if test $# -ne 1; then
+        echo "usage: build-key <name>";
+        exit 1
+fi                                                                             
+
+#cd'd to ./keys
+if test $KEY_DIR; then
+	cd $KEY_DIR && \
+	openssl req -days 3650 -nodes -new -keyout client.key -out client.csr -config $KEY_CONFIG && \
+	openssl ca -days 3650 -out client.crt -in client.csr -config $KEY_CONFIG && \
+	chmod 0600 client.key && \
+	# mod
+	rm client.csr
+
+	mkdir -p ${1}/${openvpn_root} && \
+	mkdir -p ${1}/${tunnelblick_root} && \
+
+	for file in ${templates_dir}/*.conf; do 
+		FILE_BASENAME=`basename $file .conf`
+
+		# Tunnelblick
+		mkdir -p ${1}/${tunnelblick_root}/${1}-${FILE_BASENAME}.tblk/${tunnelblick_dir}
+		cp ${templates_dir}/${file} ${1}/${tunnelblick_root}/${1}-${FILE_BASENAME}.tblk/${tunnelblick_dir}/config.ovpn
+		cp client.* ${1}/${tunnelblick_root}/${1}-${FILE_BASENAME}.tblk/${tunnelblick_dir}
+		cp ca.crt ${1}/${tunnelblick_root}/${1}-${FILE_BASENAME}.tblk/${tunnelblick_dir}
+
+		# ${openvpn_root}
+		cp ${templates_dir}/${file} ${1}/${openvpn_root}/${1}-${FILE_BASENAME}
+	done
+	
+	cp client.* ${1}/${openvpn_root}
+	cp ca.crt ${1}/${openvpn_root}
+
+	# Remove temp client files
+	rm client.*
+	
+	# 7z the stuff
+	7z -ppassword a ${1}.7z ${1}
+	
+	# end mod
+else
+	echo you must define KEY_DIR
+fi
