@@ -1,7 +1,7 @@
 openvpn-buildkey-mod
 --------------------
 
-= Description
+# Description
 
 This bash script is meant to be used as a replacement for build-key in the easy-rsa directory of openvpn.
 
@@ -15,7 +15,7 @@ For cleanup the client.* keys in keys/ are deleted.
 
 You will end up with a directory with openvpn configs and tunnelblick packages ready to be copied and used to tunnelblick and/or openvpn installation in linux/windows.
 
-= Installation
+# Installation
 
 Install p7zip-full for 7z to work.
 
@@ -25,7 +25,7 @@ Copy your template configs in the ./templates folder. Make sure you use the file
 
 Adjust the password in the script, default "password" is used. Notice the preceding but adjecent "-p". This just 7z syntax.
 
-= Usage
+# Usage
 
 Do the usual . vars first. Then execute the build-key-mod script, it takes one command-line argument. This argument will be the name for the directory stored in keys/ and the prefix for the .ovpn files and .tblk directory's
 
